@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import {
   Alert, Box, CircularProgress, Container, IconButton, InputAdornment,
-  MenuItem, Paper, Stack, TextField, Typography
+  MenuItem, Paper, Stack, TextField, Tooltip, Typography
 } from '@mui/material';
 
 const formatResult = (number) => new Intl.NumberFormat('fr-FR', {
   maximumFractionDigits: 8
 }).format(number);
 
-export default function App() {
+export default function App({ mode, onToggleTheme }) {
   const [categories, setCategories] = useState(null);
   const [category, setCategory] = useState('length');
   const [from, setFrom] = useState('foot');
@@ -58,10 +60,24 @@ export default function App() {
   const switchUnits = () => { setFrom(to); setTo(from); };
 
   return (
-    <Box sx={{ minHeight: '100vh', py: { xs: 5, sm: 10 }, background: 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)' }}>
+    <Box sx={(theme) => ({
+      minHeight: '100vh', py: { xs: 5, sm: 10 },
+      background: theme.palette.mode === 'light'
+        ? 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)'
+        : 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)'
+    })}>
       <Container maxWidth="sm">
         <Stack spacing={3}>
-          <Box textAlign="center">
+          <Box textAlign="center" position="relative">
+            <Tooltip title={mode === 'light' ? 'Activer le mode sombre' : 'Activer le mode clair'}>
+              <IconButton
+                aria-label={mode === 'light' ? 'Activer le mode sombre' : 'Activer le mode clair'}
+                onClick={onToggleTheme}
+                sx={{ position: 'absolute', right: 0, top: 0 }}
+              >
+                {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+              </IconButton>
+            </Tooltip>
             <StraightenIcon color="primary" sx={{ fontSize: 42 }} />
             <Typography variant="h3" component="h1" fontWeight={800}>Convertisseur</Typography>
             <Typography color="text.secondary">Convertissez vos unités instantanément.</Typography>
@@ -79,7 +95,7 @@ export default function App() {
               {selectUnit('De', from, setFrom)}
               <Box sx={{ display: 'flex', justifyContent: 'center', my: -1 }}><IconButton color="primary" onClick={switchUnits} aria-label="Inverser les unités"><SwapHorizIcon /></IconButton></Box>
               {selectUnit('Vers', to, setTo)}
-              <Paper variant="outlined" sx={{ p: 2.5, bgcolor: 'primary.50', textAlign: 'center' }}>
+              <Paper variant="outlined" sx={(theme) => ({ p: 2.5, bgcolor: theme.palette.action.hover, textAlign: 'center' })}>
                 <Typography variant="body2" color="text.secondary">Résultat</Typography>
                 <Typography variant="h4" color="primary" fontWeight={700} aria-live="polite">
                   {result === null ? '—' : `${formatResult(result)} ${units[to].symbol}`}
