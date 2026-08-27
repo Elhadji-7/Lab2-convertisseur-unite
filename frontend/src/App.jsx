@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import CheckIcon from '@mui/icons-material/Check';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import {
-  Alert, Box, CircularProgress, Container, IconButton, InputAdornment,
+  Alert, Box, Button, CircularProgress, Container, IconButton, InputAdornment,
   MenuItem, Paper, Stack, TextField, Tooltip, Typography
 } from '@mui/material';
 
@@ -20,6 +22,7 @@ export default function App({ mode, onToggleTheme }) {
   const [value, setValue] = useState('1');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetch('/api/conversions')
@@ -58,6 +61,18 @@ export default function App({ mode, onToggleTheme }) {
   );
 
   const switchUnits = () => { setFrom(to); setTo(from); };
+  const resultText = result === null ? '' : `${formatResult(result)} ${units[to].symbol}`;
+
+  const copyResult = async () => {
+    if (!resultText) return;
+    try {
+      await navigator.clipboard.writeText(resultText);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError('Impossible de copier le résultat dans le presse-papier.');
+    }
+  };
 
   return (
     <Box sx={(theme) => ({
@@ -98,8 +113,17 @@ export default function App({ mode, onToggleTheme }) {
               <Paper variant="outlined" sx={(theme) => ({ p: 2.5, bgcolor: theme.palette.action.hover, textAlign: 'center' })}>
                 <Typography variant="body2" color="text.secondary">Résultat</Typography>
                 <Typography variant="h4" color="primary" fontWeight={700} aria-live="polite">
-                  {result === null ? '—' : `${formatResult(result)} ${units[to].symbol}`}
+                  {result === null ? '—' : resultText}
                 </Typography>
+                <Button
+                  size="small"
+                  startIcon={copied ? <CheckIcon /> : <ContentCopyIcon />}
+                  onClick={copyResult}
+                  disabled={result === null}
+                  sx={{ mt: 1 }}
+                >
+                  {copied ? 'Copié !' : 'Copier'}
+                </Button>
               </Paper>
               {error && <Alert severity="error">{error}</Alert>}
             </Stack>
