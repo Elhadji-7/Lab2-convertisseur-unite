@@ -7,7 +7,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import {
   Alert, Box, Button, CircularProgress, Container, IconButton, InputAdornment,
-  MenuItem, Paper, Stack, TextField, Tooltip, Typography
+  List, ListItem, ListItemText, MenuItem, Paper, Stack, TextField, Tooltip, Typography
 } from '@mui/material';
 
 const formatResult = (number) => new Intl.NumberFormat('fr-FR', {
@@ -21,6 +21,7 @@ export default function App({ mode, onToggleTheme }) {
   const [to, setTo] = useState('meter');
   const [value, setValue] = useState('1');
   const [result, setResult] = useState(null);
+  const [history, setHistory] = useState([]);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -44,7 +45,18 @@ export default function App({ mode, onToggleTheme }) {
       body: JSON.stringify({ category, from, to, value })
     })
       .then((response) => response.ok ? response.json() : Promise.reject())
-      .then((data) => { setResult(data.result); setError(''); })
+      .then((data) => {
+        setResult(data.result);
+        setError('');
+        const sourceUnit = categories[category].units[from];
+        const targetUnit = categories[category].units[to];
+        const entry = {
+          id: `${Date.now()}-${category}-${from}-${to}-${data.result}`,
+          text: `${formatResult(data.value)} ${sourceUnit.symbol} → ${formatResult(data.result)} ${targetUnit.symbol}`,
+          detail: `${sourceUnit.label} vers ${targetUnit.label}`
+        };
+        setHistory((entries) => [entry, ...entries].slice(0, 5));
+      })
       .catch((err) => { if (err.name !== 'AbortError') setError('Conversion indisponible.'); });
     return () => controller.abort();
   }, [categories, category, from, to, value]);
@@ -125,6 +137,20 @@ export default function App({ mode, onToggleTheme }) {
                   {copied ? 'Copié !' : 'Copier'}
                 </Button>
               </Paper>
+              {history.length > 0 && (
+                <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
+                  <Typography variant="subtitle1" fontWeight={700} sx={{ px: 2.5, pt: 2 }}>
+                    Dernières conversions
+                  </Typography>
+                  <List dense aria-label="Historique des dernières conversions">
+                    {history.map((entry) => (
+                      <ListItem key={entry.id} divider>
+                        <ListItemText primary={entry.text} secondary={entry.detail} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              )}
               {error && <Alert severity="error">{error}</Alert>}
             </Stack>
           </Paper>
