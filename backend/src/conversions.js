@@ -37,6 +37,47 @@ export const conversionCategories = {
   }
 };
 
+const lengthReferences = [
+  { meters: 0.001, label: "l'épaisseur d'une carte bancaire" },
+  { meters: 0.01, label: "la longueur d'une abeille" },
+  { meters: 0.0856, label: "la largeur d'une carte bancaire" },
+  { meters: 0.3, label: "la longueur d'une règle d'école" },
+  { meters: 1.7, label: "la taille moyenne d'un adulte" },
+  { meters: 2.03, label: "la hauteur d'une porte standard" },
+  { meters: 12, label: "la longueur d'un autobus urbain" },
+  { meters: 30, label: "la longueur d'une baleine bleue" },
+  { meters: 105, label: "la longueur d'un terrain de football" },
+  { meters: 330, label: "la hauteur de la tour Eiffel" },
+  { meters: 8848.86, label: "la hauteur du mont Everest" }
+];
+
+const formatRatio = (ratio) => new Intl.NumberFormat('fr-FR', {
+  maximumFractionDigits: ratio < 10 ? 1 : 0
+}).format(ratio);
+
+export function getLengthFunFact(valueInMeters) {
+  if (!Number.isFinite(valueInMeters)) return null;
+
+  const size = Math.abs(valueInMeters);
+  if (size === 0) return "Une longueur nulle : impossible de faire plus court !";
+
+  const reference = lengthReferences.reduce((closest, candidate) => {
+    const closestDistance = Math.abs(Math.log(size / closest.meters));
+    const candidateDistance = Math.abs(Math.log(size / candidate.meters));
+    return candidateDistance < closestDistance ? candidate : closest;
+  });
+  const ratio = size / reference.meters;
+  const prefix = valueInMeters < 0 ? 'En valeur absolue, cette longueur' : 'Cette longueur';
+
+  if (ratio >= 0.8 && ratio <= 1.25) {
+    return `${prefix} est proche de ${reference.label}.`;
+  }
+  if (ratio > 1) {
+    return `${prefix} représente environ ${formatRatio(ratio)} fois ${reference.label}.`;
+  }
+  return `${prefix} est environ ${formatRatio(1 / ratio)} fois plus petite que ${reference.label}.`;
+}
+
 function toCelsius(value, unit) {
   if (unit === 'celsius') return value;
   if (unit === 'fahrenheit') return (value - 32) * 5 / 9;
