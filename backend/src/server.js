@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import { conversionCategories, convert } from './conversions.js';
+import { conversionCategories, convert, getLengthFunFact } from './conversions.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -27,7 +27,11 @@ app.post('/api/convert', (req, res) => {
     return res.status(400).json({ error: 'Conversion non prise en charge.' });
   }
 
-  return res.json({ category, from, to, value: numericValue, result });
+  const funFact = category === 'length'
+    ? getLengthFunFact(numericValue * conversionCategories.length.units[from].factor)
+    : null;
+
+  return res.json({ category, from, to, value: numericValue, result, funFact });
 });
 
 app.listen(port, () => console.log(`API disponible sur http://localhost:${port}`));
