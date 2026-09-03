@@ -1,13 +1,15 @@
 # Convertisseur d'unités
 
-Application web de conversion d'unités avec une API Node.js/Express et une interface React utilisant Material UI.
+Application web de conversion d'unités permettant de convertir rapidement des longueurs, volumes, masses et températures. Elle associe une API Node.js/Express à une interface React construite avec Material UI.
 
-## Prérequis
+## Installation et démarrage
+
+### Prérequis
 
 - Node.js 18 ou supérieur
 - npm
 
-## Démarrer le backend
+### Backend
 
 ```bash
 cd backend
@@ -17,7 +19,7 @@ npm run dev
 
 L'API est alors disponible sur `http://localhost:3001`.
 
-## Démarrer le frontend
+### Frontend
 
 Dans un autre terminal :
 
@@ -28,6 +30,11 @@ npm run dev
 ```
 
 Ouvrez l'adresse affichée par Vite (habituellement `http://localhost:5173`). Le serveur de développement redirige les appels `/api` vers le backend.
+
+## Fonctionnalités ajoutées
+
+- Ajout d'un historique des dernières conversions effectuées.
+- Ajout d'un bouton permettant de copier le résultat d'une conversion.
 
 ## API
 
