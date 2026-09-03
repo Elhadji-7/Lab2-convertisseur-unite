@@ -3,6 +3,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import CheckIcon from '@mui/icons-material/Check';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import {
@@ -22,6 +23,7 @@ export default function App({ mode, onToggleTheme }) {
   const [value, setValue] = useState('1');
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
+  const [funFact, setFunFact] = useState(null);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -35,8 +37,10 @@ export default function App({ mode, onToggleTheme }) {
   useEffect(() => {
     if (!categories || value === '' || Number.isNaN(Number(value))) {
       setResult(null);
+      setFunFact(null);
       return;
     }
+    setFunFact(null);
     const controller = new AbortController();
     fetch('/api/convert', {
       method: 'POST',
@@ -47,6 +51,7 @@ export default function App({ mode, onToggleTheme }) {
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then((data) => {
         setResult(data.result);
+        setFunFact(data.funFact ?? null);
         setError('');
         const sourceUnit = categories[category].units[from];
         const targetUnit = categories[category].units[to];
@@ -57,7 +62,12 @@ export default function App({ mode, onToggleTheme }) {
         };
         setHistory((entries) => [entry, ...entries].slice(0, 5));
       })
-      .catch((err) => { if (err.name !== 'AbortError') setError('Conversion indisponible.'); });
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          setFunFact(null);
+          setError('Conversion indisponible.');
+        }
+      });
     return () => controller.abort();
   }, [categories, category, from, to, value]);
 
@@ -150,6 +160,12 @@ export default function App({ mode, onToggleTheme }) {
                     ))}
                   </List>
                 </Paper>
+              )}
+              {funFact && (
+                <Alert icon={<LightbulbOutlinedIcon fontSize="inherit" />} severity="info">
+                  <Typography component="span" fontWeight={700}>Le savais-tu ? </Typography>
+                  {funFact}
+                </Alert>
               )}
               {error && <Alert severity="error">{error}</Alert>}
             </Stack>
