@@ -18,7 +18,7 @@ Les conversions sont effectuées automatiquement lorsque l'utilisateur modifie l
 - Interface adaptative réalisée avec Material UI.
 - Gestion des erreurs lorsque l'API est indisponible ou qu'une conversion n'est pas prise en charge.
 
-## Fonctionnalités ajoutées par moi
+## Fonctionnalité ajoutée par Rassoul
 
 J'ai ajouté une fonctionnalité d'anecdotes contextuelles pour les conversions de longueur :
 
@@ -31,6 +31,15 @@ J'ai ajouté une fonctionnalité d'anecdotes contextuelles pour les conversions 
 - Ajout de tests automatisés couvrant la conversion et les principaux cas de comparaison.
 
 Cette contribution correspond au commit `c0500a0` (`feat: add fun facts for length conversions`), créé par `mouhamedpsn03-lab`.
+
+## Fonctionnalité ajoutée par Elhadji-7
+
+J'ai ajouté les fonctionnalités suivantes à l'interface :
+
+- Ajout d'un bouton « Copier » pour copier le résultat de la conversion dans le presse-papier.
+- Ajout d'un historique affichant les cinq dernières conversions effectuées, de la plus récente à la plus ancienne.
+
+Ces contributions correspondent aux commits `7f2b4b4` (`feat(frontend): add copy button for conversion results`) et `ab56843` (`feat: add conversion history to interface`), créés par `Elhadji`.
 
 ## Prérequis
 
