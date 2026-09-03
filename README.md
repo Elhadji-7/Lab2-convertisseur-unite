@@ -1,44 +1,118 @@
 # Convertisseur d'unités
 
-Application web de conversion d'unités avec une API Node.js/Express et une interface React utilisant Material UI.
+## Description de l'application
+
+Cette application web permet de convertir rapidement des valeurs entre plusieurs unités. Elle repose sur une API REST développée avec Node.js et Express, ainsi que sur une interface React construite avec Material UI.
+
+Les conversions sont effectuées automatiquement lorsque l'utilisateur modifie la valeur, la catégorie ou les unités sélectionnées.
+
+## Fonctionnalités principales
+
+- Conversion des longueurs, volumes, masses et températures.
+- Sélection des unités de départ et d'arrivée.
+- Inversion rapide des unités sélectionnées.
+- Mise à jour instantanée du résultat.
+- Copie du résultat dans le presse-papier.
+- Modes clair et sombre.
+- Interface adaptative réalisée avec Material UI.
+- Gestion des erreurs lorsque l'API est indisponible ou qu'une conversion n'est pas prise en charge.
+
+## Fonctionnalités ajoutées par moi
+
+J'ai ajouté une fonctionnalité d'anecdotes contextuelles pour les conversions de longueur :
+
+- Comparaison de la longueur convertie avec une référence concrète, comme une carte bancaire, une porte, un autobus, la tour Eiffel ou le mont Everest.
+- Sélection automatique de la référence dont l'échelle est la plus proche du résultat.
+- Génération d'un message adapté lorsque la longueur est proche, plus grande ou plus petite que la référence.
+- Prise en charge des valeurs négatives, de la valeur zéro et des valeurs non finies.
+- Ajout de l'anecdote à la réponse de l'API pour les conversions de longueur.
+- Affichage de l'anecdote dans l'interface sous la forme d'un encadré « Le savais-tu ? ».
+- Ajout de tests automatisés couvrant la conversion et les principaux cas de comparaison.
+
+Cette contribution correspond au commit `c0500a0` (`feat: add fun facts for length conversions`), créé par `mouhamedpsn03-lab`.
 
 ## Prérequis
 
-- Node.js 18 ou supérieur
-- npm
+- Node.js 18 ou une version plus récente.
+- npm.
+- Git, pour cloner le dépôt.
 
-## Démarrer le backend
+## Installation
+
+Clonez le dépôt, puis placez-vous dans son dossier :
+
+```bash
+git clone https://github.com/Elhadji-7/Lab2-convertisseur-unite.git
+cd Lab2-convertisseur-unite
+```
+
+Installez les dépendances du backend :
 
 ```bash
 cd backend
 npm install
+```
+
+Installez ensuite les dépendances du frontend :
+
+```bash
+cd ../frontend
+npm install
+```
+
+## Démarrage de l'application
+
+Dans un premier terminal, démarrez l'API :
+
+```bash
+cd backend
 npm run dev
 ```
 
-L'API est alors disponible sur `http://localhost:3001`.
+L'API est alors accessible à l'adresse `http://localhost:3001`.
 
-## Démarrer le frontend
-
-Dans un autre terminal :
+Dans un second terminal, démarrez l'interface :
 
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
-Ouvrez l'adresse affichée par Vite (habituellement `http://localhost:5173`). Le serveur de développement redirige les appels `/api` vers le backend.
+Ouvrez ensuite l'adresse affichée par Vite, habituellement `http://localhost:5173`. Le serveur de développement redirige les requêtes `/api` vers le backend.
+
+## Tests
+
+Pour exécuter les tests automatisés du backend :
+
+```bash
+cd backend
+npm test
+```
 
 ## API
 
-`GET /api/conversions` retourne les catégories et unités disponibles.
+### Obtenir les catégories et les unités
 
-`POST /api/convert` accepte le corps JSON suivant :
-
-```json
-{ "category": "length", "from": "foot", "to": "meter", "value": 10 }
+```http
+GET /api/conversions
 ```
 
-et renvoie la valeur convertie.
+### Effectuer une conversion
 
-Les catégories proposées sont les longueurs, volumes, masses et températures.
+```http
+POST /api/convert
+Content-Type: application/json
+```
+
+Exemple de corps de requête :
+
+```json
+{
+  "category": "length",
+  "from": "foot",
+  "to": "meter",
+  "value": 10
+}
+```
+
+La réponse contient la valeur convertie et, dans le cas d'une longueur, une anecdote contextuelle dans le champ `funFact`.
