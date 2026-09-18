@@ -64,9 +64,15 @@ jobs:
             sudo cp -r dist/* /var/www/unit-converter/
 
             pm2 restart unit-converter-api
+            pm2 save
 
             sudo nginx -t
             sudo systemctl reload nginx
 
-            curl -f http://127.0.0.1:3001/api/health
+            echo "Attente du démarrage du backend..."
+
+            curl --retry 10 \
+                 --retry-connrefused \
+                 --retry-delay 2 \
+                 -f http://127.0.0.1:3001/api/health
           EOF
