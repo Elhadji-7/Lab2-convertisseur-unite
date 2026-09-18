@@ -1,0 +1,72 @@
+name: Deploy to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installer et tester le backend
+        working-directory: backend
+        run: |
+          npm install
+          npm test
+
+      - name: Installer et compiler le frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Configurer SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deployer sur Azure
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" << 'EOF'
+            set -e
+
+            cd ~/Lab2-convertisseur-unite
+
+            git fetch origin
+            git reset --hard origin/main
+
+            cd backend
+            npm install
+
+            cd ../frontend
+            npm install
+            npm run build
+
+            sudo rm -rf /var/www/unit-converter/*
+            sudo cp -r dist/* /var/www/unit-converter/
+
+            pm2 restart unit-converter-api
+
+            sudo nginx -t
+            sudo systemctl reload nginx
+
+            curl -f http://127.0.0.1:3001/api/health
+          EOF
