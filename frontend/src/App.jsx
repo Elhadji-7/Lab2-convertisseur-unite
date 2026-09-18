@@ -117,7 +117,7 @@ export default function App({ mode, onToggleTheme }) {
             </Tooltip>
             <StraightenIcon color="primary" sx={{ fontSize: 42 }} />
             <Typography variant="h3" component="h1" fontWeight={800}>Convertisseur</Typography>
-            <Typography color="text.secondary">Convertissez vos unités instantanément.</Typography>
+            <Typography color="text.secondary">Convertissez vos unités rapidement et simplement.</Typography>
           </Box>
           <Paper elevation={4} sx={{ p: { xs: 2.5, sm: 4 } }}>
             <Stack spacing={3}>
